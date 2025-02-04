@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マス目シミュレーション</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .grid-container { display: grid; grid-template-columns: repeat(7, 50px); gap: 5px; margin: 20px auto; }
+        .grid-item { width: 50px; height: 50px; border: 1px solid black; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .selected { background-color: yellow; }
+        .highlight { background-color: red; }
+    </style>
+</head>
+<body>
+
+    <h2>6×7 マス目シミュレーション</h2>
+
+    <div id="grid" class="grid-container"></div>
+
+    <p>開始位置（マス番号）: <input type="number" id="startPos" min="0" max="41"></p>
+    <p>移動回数: <input type="number" id="moveCount" min="1" value="100"></p>
+    <button onclick="startSimulation()">シミュレーション開始</button>
+
+    <h3>結果</h3>
+    <canvas id="resultCanvas" width="350" height="300"></canvas>
+
+    <script>
+        const rows = 6, cols = 7;
+        const grid = document.getElementById("grid");
+        
+        // 6×7 のグリッドを作成
+        for (let i = 0; i < rows * cols; i++) {
+            const cell = document.createElement("div");
+            cell.classList.add("grid-item");
+            cell.textContent = i;  // マス番号
+            grid.appendChild(cell);
+        }
+
+        function startSimulation() {
+            let start = parseInt(document.getElementById("startPos").value);
+            let moves = parseInt(document.getElementById("moveCount").value);
+
+            fetch("/simulate", {
+                method: "POST",
+                body: JSON.stringify({ start: start, moves: moves }),
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => drawHeatmap(data));
+        }
+
+        function drawHeatmap(data) {
+            const canvas = document.getElementById("resultCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const maxCount = Math.max(...data.flat());
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    let value = data[r][c] / maxCount;
+                    ctx.fillStyle = `rgba(255, 0, 0, ${value})`;
+                    ctx.fillRect(c * 50, r * 50, 50, 50);
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
