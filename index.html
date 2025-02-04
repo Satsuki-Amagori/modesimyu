@@ -8,8 +8,6 @@
         body { font-family: Arial, sans-serif; text-align: center; }
         .grid-container { display: grid; grid-template-columns: repeat(7, 50px); gap: 5px; margin: 20px auto; }
         .grid-item { width: 50px; height: 50px; border: 1px solid black; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .selected { background-color: yellow; }
-        .highlight { background-color: red; }
     </style>
 </head>
 <body>
@@ -28,12 +26,11 @@
     <script>
         const rows = 6, cols = 7;
         const grid = document.getElementById("grid");
-        
-        // 6×7 のグリッドを作成
+
         for (let i = 0; i < rows * cols; i++) {
             const cell = document.createElement("div");
             cell.classList.add("grid-item");
-            cell.textContent = i;  // マス番号
+            cell.textContent = i;
             grid.appendChild(cell);
         }
 
@@ -41,13 +38,8 @@
             let start = parseInt(document.getElementById("startPos").value);
             let moves = parseInt(document.getElementById("moveCount").value);
 
-            fetch("/simulate", {
-                method: "POST",
-                body: JSON.stringify({ start: start, moves: moves }),
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => drawHeatmap(data));
+            let result = simulate(start, moves);
+            drawHeatmap(result);
         }
 
         function drawHeatmap(data) {
