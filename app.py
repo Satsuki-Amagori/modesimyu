@@ -9,7 +9,7 @@ probabilities = [1/10, 1/10, 1/10, 1/10, 1/20, 1/20, 1/20, 1/20]
 
 def simulate(start, moves):
     grid_count = [[0] * cols for _ in range(rows)]
-    trials = 1000
+    trials = 3
 
     for _ in range(trials):
         r, c = divmod(start, cols)
